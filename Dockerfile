@@ -20,7 +20,7 @@ RUN pip install --upgrade pip
 
 COPY requirements/dev.txt /tmp/requirements
 
-MKDIR /carlemany-backend
+WORKDIR /carlemany-backend
 
 COPY . ./
 
@@ -32,7 +32,7 @@ RUN pip install --upgrade pip
 
 COPY requirements/prod.txt /tmp/requirements
 
-MKDIR /carlemany-backend
+WORKDIR /carlemany-backend
 
 COPY . ./
 
