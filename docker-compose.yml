@@ -14,6 +14,8 @@ services:
      - .env
     ports:
       - "8880:80"
+    depends_on:
+      - redis-dock
     networks:
       - carlemany-net
 
@@ -26,7 +28,7 @@ services:
         read_only: true
     entrypoint: sh -c "black --config .black --check --diff ."
 
-  redis:
+  redis-dock:
     image: redis:7.2.4
     hostname: redis-cache
     container_name: redis-cache

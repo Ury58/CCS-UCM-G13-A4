@@ -1,6 +1,6 @@
 # app/auth/router.py
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Header
 from hashlib import sha256
 from random import randint
 import redis
@@ -12,7 +12,7 @@ async def test2(id: int) -> dict[str, int]:
     return {"id": id}
 
 users = {}
-redis_instance = redis.Redis(host="localhost", port=6379, decode_response=True)
+redis_instance = redis.Redis(host="redis-dock", port=6379, decode_response=True)
 
 
 @router.post("/register")
@@ -33,5 +33,10 @@ async def login_func(input: dict = Body()) -> dict:
     token = randint(0,100000000)
     redis.set(token, user)
     return {"token": token}
+
+@router.get("/introspect")
+async def introspect_func(token: str = Header()):
+    print(token)
+    return {}
 
 
