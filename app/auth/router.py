@@ -12,7 +12,7 @@ async def test2(id: int) -> dict[str, int]:
     return {"id": id}
 
 users = {}
-redis_instance = redis.Redis(host="redis-dock", port=6379, decode_response=True)
+redis_instance = redis.Redis(host="redis-dock", port=6379, decode_responses=True)
 
 
 @router.post("/register")

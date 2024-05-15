@@ -1,31 +1,15 @@
 from fastapi import FastAPI
-from app.auth.router import router as test2
-from app.files.router import router as test1
+from app.auth.router import router as test2_router
+from app.files.router import router as test_router
 
-tags_metadata[
-    {
-        "name": "test1"
-        "description": "desc test1"
-    }
-    {
-        "name": "auth"
-        "description": "A4 auth"
-    }
-]
-
-
-app = FastAPI(
-    Title="A4"
-    Description="Activity 4"
-    tags_metadata=tags_metadata
-)
+app = FastAPI()
 
 @app.get("/healthcheck")
 async def healthcheck() -> dict[str, str]:
      return {"status": "ok"}
 
 app.include_router(test_router, prefix="/files", tags=["files"])
-app.include_router(test2_reouter, prefix="/auth", tags=["auth"])
+app.include_router(test2_router, prefix="/auth", tags=["auth"])
 
 # @app.post("/post_example")
 # async def post_example_function(post_input: dict) -> dict[str, str]:
