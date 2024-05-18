@@ -31,12 +31,12 @@ async def login_func(input: dict = Body()) -> dict:
     print(password)
     print(password == users[user])
     token = randint(0,100000000)
-    redis.set(token, user)
+    redis_instance.set(token, user)
     return {"token": token}
 
 @router.get("/introspect")
-async def introspect_func(token: str = Header()):
+async def introspect_func(token: str = Header()) -> dict:
     print(token)
-    return {}
+    return {"user": redis_instance.get(token)}
 
 
