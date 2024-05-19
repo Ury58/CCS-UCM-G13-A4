@@ -54,4 +54,11 @@ async def introspect_func(token: str = Header()) -> dict:
     else:
         return {"error": "Invalid token"}
 
-
+@router.post("/logout")
+async def logout_func(token: str = Header()) -> dict:
+    user_info = token_persistence.get_token(token)
+    if user_info:
+        token_persistence.delete_token(token)
+        return {"message": "Logged out successfully"}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid token")

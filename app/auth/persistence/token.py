@@ -15,6 +15,9 @@ class TokenPersistence:
         if user_info_json:
             return json.loads(user_info_json)
         return None
+    
+    def delete_token(self, token: int):
+        self.redis_instance.delete(token)
 
 # Initialize the persistence instance
 token_persistence = TokenPersistence()
