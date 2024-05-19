@@ -339,7 +339,7 @@ async def login_func(input: dict = Body()) -> dict:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
 @router.post("/logout")
-async def logout_func(Authorization: str = Header()) -> dict:
+async def logout_func(Authorization: str = Header(...)) -> dict:
     user_info = token_persistence.get_token(Authorization)
     if user_info:
         token_persistence.delete_token(Authorization)
@@ -349,6 +349,9 @@ async def logout_func(Authorization: str = Header()) -> dict:
 
 @router.get("/introspect")
 async def introspect_func(Authorization: str = Header(...)) -> dict:
+    if Authorization is None:
+        raise HTTPException(status_code=400, detail="Authorization header missing")
+
     user_info = token_persistence.get_token(Authorization)
     if user_info:
         return user_info
