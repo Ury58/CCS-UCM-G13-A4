@@ -1,3 +1,94 @@
+# version: "3.7"
+
+# services:
+#   carlemany-backend:
+#     build:
+#       context: .
+#       target: carlemany-backend-dev
+#     image: carlemany-backend-dev
+#     volumes:
+#       - type: bind
+#         source: .
+#         target: /carlemany-backend
+#     env_file:
+#      - .env
+#     ports:
+#       - "8880:80"
+#     depends_on:
+#       - redis-dock
+#     networks:
+#       - carlemany-net
+
+#   black:
+#     image: carlemany-backend-dev:latest
+#     volumes:
+#       - type: bind
+#         source: ./
+#         target: /carlemany-backend
+#         read_only: true
+#     entrypoint: sh -c "black --config .black --check --diff ."
+
+#   redis-dock:
+#     image: redis:7.2.4
+#     hostname: redis-cache
+#     container_name: redis-cache
+#     restart: on-failure
+#     command: redis-server
+#     environment:
+#       - ALLOW_EMPTY_PASSWORD=yes
+#     ports:
+#       - "6379:6379"
+#     networks:
+#       - carlemany-net
+      
+#   minio-server:
+#     image: quay.io/minio/minio:RELEASE.2023-11-01T01-57-10Z
+#     command: minio server /data --console-address ":9090"
+#     ports:
+#       - "9000:9000"
+#       - "9090:9090"
+#     environment:
+#       - MINIO_ROOT_USER=minio
+#       - MINIO_ROOT_PASSWORD=minio123
+#     restart: always
+#     networks:
+#       - carlemany-net
+
+#   minio:
+#     image: minio/mc
+#     depends_on:
+#       - minio-server
+#     entrypoint: >
+#       /bin/sh -c "
+#       /usr/bin/mc alias set myminio minio-server:9000 minio minio123;
+#       /usr/bin/mc mb myminio/backend-carlemany-s3-bucket;
+#       /usr/bin/mc anonymous set download myminio/backend-carlemany-s3-bucket;
+#       /usr/bin/mc policy set public myminio/backend-carlemany-s3-bucket;
+#       exit 0;
+#       "
+#     networks:
+#       - carlemany-net
+
+#   test: &test
+#     image: carlemany-backend-dev:latest
+#     env_file:
+#      - .env
+#     volumes:
+#       - type: bind
+#         source: ./
+#         target: /carlemany-backend
+#     networks:
+#       - carlemany-net
+#     entrypoint: pytest --maxfail=10
+
+#   test-cov:
+#     <<: *test
+#     entrypoint: pytest --maxfail=10 --cov --cov-report=term --cov-report=html --junitxml=tests/test-results/junit.xml
+
+
+# networks:
+#   carlemany-net:
+
 version: "3.7"
 
 services:
@@ -16,6 +107,7 @@ services:
       - "8880:80"
     depends_on:
       - redis-dock
+      - minio-server
     networks:
       - carlemany-net
 
@@ -40,7 +132,7 @@ services:
       - "6379:6379"
     networks:
       - carlemany-net
-      
+
   minio-server:
     image: quay.io/minio/minio:RELEASE.2023-11-01T01-57-10Z
     command: minio server /data --console-address ":9090"
@@ -84,7 +176,6 @@ services:
   test-cov:
     <<: *test
     entrypoint: pytest --maxfail=10 --cov --cov-report=term --cov-report=html --junitxml=tests/test-results/junit.xml
-
 
 networks:
   carlemany-net:
