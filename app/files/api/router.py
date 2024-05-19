@@ -79,7 +79,8 @@
 #     del file_names[filename]
 #     return {}
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Header, Body, Path
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Header, Body
+from typing import List
 from app.files.domain.services import get_file_service, FileService
 from app.auth.api.router import get_current_user
 
