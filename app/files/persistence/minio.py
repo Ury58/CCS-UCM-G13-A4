@@ -1,14 +1,44 @@
 # app/files/persistence/minio.py
 
+# from minio import Minio
+# from minio.error import S3Error
+
+# class MinioClient:
+#     def __init__(self):
+#         self.client = Minio(
+#             "minio:9000",
+#             access_key="minio",
+#             secret_key="minio123",
+#             secure=False
+#         )
+#         self.bucket_name = "files"
+#         if not self.client.bucket_exists(self.bucket_name):
+#             self.client.make_bucket(self.bucket_name)
+
+#     def upload_file(self, file, file_name):
+#         try:
+#             self.client.put_object(
+#                 self.bucket_name, file_name, file.file, length=-1, part_size=10*1024*1024
+#             )
+#             return {"file_name": file_name}
+#         except S3Error as e:
+#             raise HTTPException(status_code=500, detail=str(e))
+
+#     # Other methods to interact with Minio (e.g., download, delete, list files)
+
 from minio import Minio
 from minio.error import S3Error
+from fastapi import HTTPException
+from PyPDF2 import PdfMerger
+from tempfile import NamedTemporaryFile
+import os
 
 class MinioClient:
     def __init__(self):
         self.client = Minio(
-            "minio:9000",
-            access_key="YOUR_ACCESS_KEY",
-            secret_key="YOUR_SECRET_KEY",
+            "minio-server:9000",
+            access_key="minio",
+            secret_key="minio123",
             secure=False
         )
         self.bucket_name = "files"
@@ -21,6 +51,31 @@ class MinioClient:
                 self.bucket_name, file_name, file.file, length=-1, part_size=10*1024*1024
             )
             return {"file_name": file_name}
+        except S3Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    def merge_pdfs(self, pdfs: List[str], output_name: str):
+        merger = PdfMerger()
+        for pdf in pdfs:
+            response = self.client.get_object(self.bucket_name, pdf)
+            with NamedTemporaryFile(delete=False) as temp_file:
+                temp_file.write(response.read())
+                merger.append(temp_file.name)
+                os.unlink(temp_file.name)
+        with NamedTemporaryFile(delete=False) as temp_file:
+            merger.write(temp_file.name)
+            merger.close()
+            with open(temp_file.name, "rb") as temp_merged:
+                self.upload_file(temp_merged, output_name)
+            os.unlink(temp_file.name)
+
+    def list_files(self) -> List[str]:
+        objects = self.client.list_objects(self.bucket_name)
+        return [obj.object_name for obj in objects]
+
+    def delete_file(self, file_name: str):
+        try:
+            self.client.remove_object(self.bucket_name, file_name)
         except S3Error as e:
             raise HTTPException(status_code=500, detail=str(e))
 
