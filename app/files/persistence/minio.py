@@ -2,20 +2,21 @@
 
 from minio import Minio
 from minio.error import S3Error
+from fastapi import HTTPException, UploadFile
 
 class MinioClient:
     def __init__(self):
         self.client = Minio(
             "minio:9000",
-            access_key="YOUR_ACCESS_KEY",
-            secret_key="YOUR_SECRET_KEY",
+            access_key="minio",
+            secret_key="minio123",
             secure=False
         )
         self.bucket_name = "files"
         if not self.client.bucket_exists(self.bucket_name):
             self.client.make_bucket(self.bucket_name)
 
-    def upload_file(self, file, file_name):
+    def upload_file(self, file: UploadFile, file_name: str):
         try:
             self.client.put_object(
                 self.bucket_name, file_name, file.file, length=-1, part_size=10*1024*1024

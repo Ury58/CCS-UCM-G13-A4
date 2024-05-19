@@ -1,0 +1,19 @@
+app/
+├── auth/
+│   ├── api/
+│   │   └── router.py
+│   ├── dependency_injection/
+│   ├── domain/
+│   ├── persistence/
+│   │   └── token.py
+├── files/
+│   ├── api/
+│   │   └── router.py
+│   ├── dependency_injection/
+│   │   └── redis.py
+│   ├── domain/
+│   │   └── services.py
+│   ├── persistence/
+│   │   ├── minio.py
+│   │   └── redis.py
+└── main.py
