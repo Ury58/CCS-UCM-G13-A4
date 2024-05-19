@@ -8,7 +8,7 @@ from pypdf import PdfMerger
 router = APIRouter()
 
 @router.get("/file")
-async def get_file() -> dict[str, Any]:
+async def get_file() -> dict[str, any]:
     files = []
     for name, id in file_names.items():
         files.append({"id": id, "name": name})
