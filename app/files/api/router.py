@@ -13,6 +13,9 @@ router = APIRouter()
 
 file_names = {}
 
+class FileUrlOutput(BaseModel):
+    url: str
+
 @router.get("/file")
 async def get_file(service: FileService = Depends(get_file_service)) -> dict:
     files = service.get_all_files("dummy_user")
@@ -25,12 +28,17 @@ async def post_file(input: dict, service: FileService = Depends(get_file_service
     file_names[name] = id
     return {"id": id}
 
-@router.get("/file/{id}")
+# @router.get("/file/{id}")
+# async def get_file(id: int, service: FileService = Depends(get_file_service)):
+#     for current_name, current_id in file_names.items():
+#         if current_id == id:
+#             filename = current_name
+#     return FileResponse(filename, media_type="application/pdf", filename=filename)
+
+@router.get("/file/{id}", response_model=FileUrlOutput)
 async def get_file(id: int, service: FileService = Depends(get_file_service)):
-    for current_name, current_id in file_names.items():
-        if current_id == id:
-            filename = current_name
-    return FileResponse(filename, media_type="application/pdf", filename=filename)
+    url = service.get_file_url("dummy_user", id)
+    return {"url": url}
 
 @router.post("/file/merge")
 async def merge_files(input: dict, service: FileService = Depends(get_file_service)) -> dict:

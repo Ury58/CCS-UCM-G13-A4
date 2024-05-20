@@ -22,10 +22,17 @@ class FileService:
         file_names[file_name] = file_id
         return {"id": file_id}
 
-    def get_file(self, user: str, file_id: int) -> Dict:
+    # def get_file(self, user: str, file_id: int) -> Dict:
+    #     for name, id in file_names.items():
+    #         if id == file_id:
+    #             return FileResponse(name, media_type="application/pdf", filename=name)
+    #     raise HTTPException(status_code=404, detail="File not found")
+
+    def get_file_url(self, user: str, file_id: int) -> Dict:
         for name, id in file_names.items():
             if id == file_id:
-                return FileResponse(name, media_type="application/pdf", filename=name)
+                url = self.minio_client.get_file_url(name)
+                return url
         raise HTTPException(status_code=404, detail="File not found")
 
     def delete_file(self, user: str, file_id: int) -> Dict:

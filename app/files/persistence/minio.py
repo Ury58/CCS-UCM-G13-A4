@@ -54,4 +54,11 @@ class MinioClient:
         except S3Error as e:
             raise HTTPException(status_code=500, detail=str(e))
 
+    def get_file_url(self, file_name: str) -> str:
+        try:
+            url = self.client.presigned_get_object(self.bucket_name, file_name)
+            return url
+        except S3Error as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
     # Other methods to interact with Minio (e.g., download, delete, list files)
