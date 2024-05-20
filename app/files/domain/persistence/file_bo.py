@@ -1,9 +1,7 @@
 #app/files/domain/persistence/file_bo.py
 
 from abc import ABC, abstractmethod
-
 from app.files.domain.bo.file_bo import FileBO
-
 
 class FileBOPersistenceInterface(ABC):
 
